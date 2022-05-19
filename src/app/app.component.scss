@@ -1,0 +1,13 @@
+.nav {
+  display: flex;
+  align-items: center;
+
+  &__item {
+    cursor: pointer;
+    padding: 10px;
+  }
+}
+
+.main {
+  max-width: 900px;
+}
