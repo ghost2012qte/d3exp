@@ -7,13 +7,17 @@ import { AppComponent } from './app.component';
 import { Chapter1Component } from './chapter1/chapter1.component';
 import { Chapter2Component } from './chapter2/chapter2.component';
 import { Chapter3Component } from './chapter3/chapter3.component';
+import { Chapter4Component } from './chapter4/chapter4.component';
+import { ExperimentalComponent } from './experimental/experimental.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     Chapter1Component,
     Chapter2Component,
-    Chapter3Component
+    Chapter3Component,
+    Chapter4Component,
+    ExperimentalComponent
   ],
   imports: [
     BrowserModule,

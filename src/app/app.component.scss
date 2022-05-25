@@ -1,6 +1,7 @@
 .nav {
   display: flex;
   align-items: center;
+  align-self: center;
 
   &__item {
     cursor: pointer;
@@ -9,5 +10,8 @@
 }
 
 .main {
-  max-width: 900px;
+  width: 950px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
 }

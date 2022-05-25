@@ -1,5 +1,5 @@
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
-import { select, scaleLinear, line, max, curveStep, curveNatural, CurveFactory, axisBottom, axisLeft, extent, shuffle } from 'd3';
+import { ChangeDetectionStrategy, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { select, scaleLinear, line, max, curveStep, curveNatural, CurveFactory, axisBottom, axisLeft, extent } from 'd3';
 import { forkJoin } from 'rxjs';
 import { MarginConvention } from '../models/margin-convention';
 import { DatasetService } from '../services/dataset.service';
@@ -8,7 +8,8 @@ import { IExampleMultiple, IExampleSimple } from '../services/dataset.types';
 @Component({
   selector: 'app-chapter1',
   templateUrl: './chapter1.component.html',
-  styleUrls: ['./chapter1.component.scss']
+  styleUrls: ['./chapter1.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class Chapter1Component implements OnInit {
 
@@ -192,26 +193,30 @@ export class Chapter1Component implements OnInit {
   private drawList2(): void {
     if (this.ul2 == null) return;
 
-    const dataset = ['1', '2', '3', '4', '5'];
+    const dataset1 = [1,2,3,4,5];
+    const dataset2 = [1,2,9,4,5];
 
     const ul = select(this.ul2.nativeElement);
-    
-    const liSelection = ul.selectAll<HTMLLIElement, string>('li')
-      .data(dataset, d => d);
 
-    liSelection.enter()
-      .append('li')
-      .style('color', 'tomato')
-      .text(d => d);
-    
+    const draw = (data: readonly number[]) => {
+      const selection = ul
+        .selectAll<HTMLElement, number>('li')
+        .data(data, d => d);
 
-    ul.on('click', function () {
-      ul.selectAll<HTMLLIElement, string>('li')
-        .data(['9', '1', '2', '4', '8', '11'], d => d)
-        .join('li')
-        .style('color', 'blue')
+      selection.exit().remove();
+
+      selection.enter()
+        .append('li')
         .text(d => d);
-    })
+
+      selection.style('color', 'red');
+    };
+
+    draw(dataset1);
+
+    ul.on('click', function() {
+      draw(dataset2);
+    });
   }
 
 }

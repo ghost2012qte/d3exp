@@ -1,17 +1,18 @@
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
-import { scaleLinear, select } from 'd3';
+import { ChangeDetectionStrategy, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { arc, pie, scaleLinear, select } from 'd3';
 import { DatasetList } from '../models/dataset-list';
 
 @Component({
   selector: 'app-chapter2',
   templateUrl: './chapter2.component.html',
-  styleUrls: ['./chapter2.component.scss']
+  styleUrls: ['./chapter2.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class Chapter2Component implements OnInit {
 
-  @ViewChild('example1', {static: true}) example1Ref?: ElementRef<SVGAElement>;
-  @ViewChild('example2', {static: true}) example2Ref?: ElementRef<SVGAElement>;
-  @ViewChild('example3', {static: true}) example3Ref?: ElementRef<HTMLUListElement>;
+  @ViewChild('example1', { static: true }) example1Ref?: ElementRef<SVGAElement>;
+  @ViewChild('example2', { static: true }) example2Ref?: ElementRef<SVGAElement>;
+  @ViewChild('example3', { static: true }) example3Ref?: ElementRef<HTMLUListElement>;
 
   constructor() { }
 
@@ -24,8 +25,8 @@ export class Chapter2Component implements OnInit {
   private example1(): void {
     if (this.example1Ref == null) return;
     
-    const dataset1: [string, number][] = [["Mary", 1], ["Jane", 4], ["Anne", 2]];
-    const dataset2: [string, number][] = [["Anne", 5], ["Jane", 3]];
+    const dataset1: [string, number][] = [['Mary', 1], ['Jane', 4], ['Anne', 2]];
+    const dataset2: [string, number][] = [['Anne', 5], ['Jane', 3]];
     
     const scaleX = scaleLinear().domain([0, 6]).range([50, 300]);
     const scaleY = scaleLinear().domain([0, 3]).range([50, 150]);
@@ -67,18 +68,8 @@ export class Chapter2Component implements OnInit {
     if (this.example2Ref == null) return;
     
     const datasetList = new DatasetList<[number, number, string][]>([
-      [
-        [2, 3, "green"],
-        [1, 2, "red"],
-        [2, 1, "blue"],
-        [3, 2, "yellow"]
-      ],
-      [
-        [1, 1, "red"],
-        [3, 3, "black"],
-        [1, 3, "lime"],
-        [3, 1, "blue"]
-      ]
+      [ [2, 3, 'green'], [1, 2, 'red'], [2, 1, 'blue'], [3, 2, 'yellow'] ],
+      [ [1, 1, 'red'], [3, 3, 'black'], [1, 3, 'lime'],  [3, 1, 'blue'] ]
     ]);
     
     const svg = select(this.example2Ref.nativeElement);
@@ -88,16 +79,16 @@ export class Chapter2Component implements OnInit {
     
     const draw = (): void => {
       const selection = svg
-        .selectAll<SVGCircleElement, [number, number, string]>("circle")
+        .selectAll<SVGCircleElement, [number, number, string]>('circle')
         .data(datasetList.active, d => d[2]);
       
       selection.enter()
         .append('circle')
-        .attr("r", 5)
-        .attr("fill", d => d[2])
+        .attr('r', 5)
+        .attr('fill', d => d[2])
         .merge(selection)
-        .attr("cx", d => scaleX(d[0]))
-        .attr("cy", d => scaleY(d[1]));
+        .attr('cx', d => scaleX(d[0]))
+        .attr('cy', d => scaleY(d[1]));
       
       selection.exit().remove();
     };
@@ -113,7 +104,7 @@ export class Chapter2Component implements OnInit {
   private example3() {
     if (this.example3Ref == null) return;
 
-    const dataset = ["Jane", "Anne", "Mary"];
+    const dataset = ['Jane', 'Anne', 'Mary'];
     const ul = select<HTMLUListElement, string>(this.example3Ref.nativeElement);
 
     ul.selectAll<HTMLLIElement, string>('li')

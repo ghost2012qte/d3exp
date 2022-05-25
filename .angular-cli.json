@@ -1,0 +1,8 @@
+{
+  "defaults": {
+    "component": {
+      "spec": false,
+      "changeDetection": "OnPush"
+    }
+  }
+}

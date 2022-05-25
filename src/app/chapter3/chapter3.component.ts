@@ -1,4 +1,4 @@
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { ChangeDetectionStrategy, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { select, scaleLinear, Selection, ScaleLinear, pointer, drag, merge, max, timeout, timer, range, scaleQuantize, shuffle, interval } from 'd3';
 import { takeUntil } from 'rxjs/operators';
 import { BaseComponent } from '../models/BaseComponent';
@@ -10,15 +10,16 @@ import { IExampleDense } from '../services/dataset.types';
 @Component({
   selector: 'app-chapter3',
   templateUrl: './chapter3.component.html',
-  styleUrls: ['./chapter3.component.scss']
+  styleUrls: ['./chapter3.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class Chapter3Component extends BaseComponent implements OnInit {
 
-  @ViewChild('example1', {static: true}) example1Ref?: ElementRef<SVGAElement>;
-  @ViewChild('example2', {static: true}) example2Ref?: ElementRef<SVGAElement>;
-  @ViewChild('example3', {static: true}) example3Ref?: ElementRef<SVGAElement>;
-  @ViewChild('example4', {static: true}) example4Ref?: ElementRef<SVGAElement>;
-  @ViewChild('example5', {static: true}) example5Ref?: ElementRef<SVGAElement>;
+  @ViewChild('example1', { static: true }) example1Ref?: ElementRef<SVGAElement>;
+  @ViewChild('example2', { static: true }) example2Ref?: ElementRef<SVGAElement>;
+  @ViewChild('example3', { static: true }) example3Ref?: ElementRef<SVGAElement>;
+  @ViewChild('example4', { static: true }) example4Ref?: ElementRef<SVGAElement>;
+  @ViewChild('example5', { static: true }) example5Ref?: ElementRef<SVGAElement>;
 
   constructor(private datasetService: DatasetService) {
     super();
@@ -149,7 +150,6 @@ export class Chapter3Component extends BaseComponent implements OnInit {
       });
 
     select(this.example2Ref.nativeElement)
-      .style('background', 'black')
       .selectAll<SVGElement, unknown>('circle')
       .attr('cursor', 'pointer')
       .call(dragBehavior);
@@ -220,7 +220,7 @@ export class Chapter3Component extends BaseComponent implements OnInit {
     let prvY = crrY;
     
     const bogusOpacity = Symbol('bogus_opacity');
-    type ExtendedSvgLine = SVGLineElement & {[bogusOpacity]: number};
+    type ExtendedSVGLineElement = SVGLineElement & {[bogusOpacity]: number};
 
     const lissajousTimer = timer(t => {
       phi = omega * t;
@@ -228,7 +228,7 @@ export class Chapter3Component extends BaseComponent implements OnInit {
       crrX = 150 + 100 * Math.cos(a * phi);
       crrY = 150 + 100 * Math.sin(b * phi);
 
-      svg.selectAll<ExtendedSvgLine, unknown>('line')
+      svg.selectAll<ExtendedSVGLineElement, unknown>('line')
         .each(function() {
           this[bogusOpacity] -= 0.007;
         })
@@ -240,7 +240,7 @@ export class Chapter3Component extends BaseComponent implements OnInit {
         })
         .remove();
 
-      svg.append<ExtendedSvgLine>( 'line' )
+      svg.append<ExtendedSVGLineElement>( 'line' )
         .each( function() {
           this[bogusOpacity] = 1.0;
         })
@@ -294,7 +294,7 @@ export class Chapter3Component extends BaseComponent implements OnInit {
         dataset[i].val = dataset[y * n + x].val;
       }));
 
-      svg.selectAll<SVGRectElement, typeof dataset[0]>('rect')
+      svg.selectAll<SVGRectElement, typeof dataset[number]>('rect')
         .data(dataset)
         .transition()
         .duration(updateTime)
