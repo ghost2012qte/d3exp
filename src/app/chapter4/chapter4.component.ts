@@ -190,7 +190,7 @@ export class Chapter4Component implements OnInit {
       .cornerRadius(10);
 
     const scaleColor = scaleOrdinal<string>()
-      .domain(pieLayout.map(d => String(d)))
+      .domain(pieLayout.map(String))
       .range(schemePastel2);
 
     const g = select(this.example4Ref.nativeElement).append('g')

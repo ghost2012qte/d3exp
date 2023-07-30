@@ -9,6 +9,8 @@ import { Chapter2Component } from './chapter2/chapter2.component';
 import { Chapter3Component } from './chapter3/chapter3.component';
 import { Chapter4Component } from './chapter4/chapter4.component';
 import { ExperimentalComponent } from './experimental/experimental.component';
+import { AnimatedPieComponent } from './animated-pie/animated-pie.component';
+import { StmGraphComponent } from './stm-graph/stm-graph.component';
 
 @NgModule({
   declarations: [
@@ -17,7 +19,9 @@ import { ExperimentalComponent } from './experimental/experimental.component';
     Chapter2Component,
     Chapter3Component,
     Chapter4Component,
-    ExperimentalComponent
+    ExperimentalComponent,
+    AnimatedPieComponent,
+    StmGraphComponent
   ],
   imports: [
     BrowserModule,
