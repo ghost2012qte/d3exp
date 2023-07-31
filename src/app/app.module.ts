@@ -10,6 +10,7 @@ import { Chapter3Component } from './chapter3/chapter3.component';
 import { Chapter4Component } from './chapter4/chapter4.component';
 import { StmGraphComponent } from './stm-graph/stm-graph.component';
 import { AntiDdosInfoComponent } from './stm-graph/anti-ddos-info/anti-ddos-info.component';
+import { DatePipe } from '@angular/common';
 
 @NgModule({
   declarations: [
@@ -26,7 +27,7 @@ import { AntiDdosInfoComponent } from './stm-graph/anti-ddos-info/anti-ddos-info
     HttpClientModule,
     AppRoutingModule
   ],
-  providers: [],
+  providers: [DatePipe],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
