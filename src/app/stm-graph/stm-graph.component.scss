@@ -1,0 +1,8 @@
+.grid {
+  display: flex;
+
+  &__part {
+    flex-basis: 100%;
+    //border: 1px solid orange;
+  }
+}

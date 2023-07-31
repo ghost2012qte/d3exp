@@ -8,9 +8,8 @@ import { Chapter1Component } from './chapter1/chapter1.component';
 import { Chapter2Component } from './chapter2/chapter2.component';
 import { Chapter3Component } from './chapter3/chapter3.component';
 import { Chapter4Component } from './chapter4/chapter4.component';
-import { ExperimentalComponent } from './experimental/experimental.component';
-import { AnimatedPieComponent } from './animated-pie/animated-pie.component';
 import { StmGraphComponent } from './stm-graph/stm-graph.component';
+import { AntiDdosInfoComponent } from './stm-graph/anti-ddos-info/anti-ddos-info.component';
 
 @NgModule({
   declarations: [
@@ -19,9 +18,8 @@ import { StmGraphComponent } from './stm-graph/stm-graph.component';
     Chapter2Component,
     Chapter3Component,
     Chapter4Component,
-    ExperimentalComponent,
-    AnimatedPieComponent,
-    StmGraphComponent
+    StmGraphComponent,
+    AntiDdosInfoComponent
   ],
   imports: [
     BrowserModule,
