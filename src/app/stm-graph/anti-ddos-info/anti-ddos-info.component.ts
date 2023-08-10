@@ -1,12 +1,14 @@
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
-import { ANTI_DDOS_MC, COLORS } from './anti-ddos-info.config';
-import { ScaleLinear, ScaleTime, Selection, area, line, range, scaleBand, scaleLinear, scaleOrdinal, scaleTime, select } from 'd3';
-import { DatePipe } from '@angular/common';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Inject, OnInit, ViewChild } from '@angular/core';
+import { ANTI_DDOS_MC, SCALE_FILL, SCALE_STROKE } from './anti-ddos-info.config';
+import { ScaleLinear, ScaleTime, Selection, area, line, pointer, scaleBand, scaleLinear, scaleTime, select } from 'd3';
+import { DOCUMENT, DatePipe } from '@angular/common';
+import { GraphTooltipModel, GraphTooltipPosition } from './classes/graph-tooltip-model';
 
 @Component({
   selector: 'app-anti-ddos-info',
   templateUrl: './anti-ddos-info.component.html',
-  styleUrls: ['./anti-ddos-info.component.scss']
+  styleUrls: ['./anti-ddos-info.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AntiDdosInfoComponent implements OnInit {
   readonly mc = ANTI_DDOS_MC;
@@ -14,13 +16,20 @@ export class AntiDdosInfoComponent implements OnInit {
   @ViewChild('svgRef', { static: true }) svgRef!: ElementRef<SVGElement>;
 
   private svg!: Selection<SVGElement, unknown, null, undefined>;
+
   private scaleX!: ScaleTime<number, number, never>;
   private scaleY!:  ScaleLinear<number, number, never>;
 
   private dataset: ReturnType<AntiDdosInfoComponent['generateData']>;
   private dates: Date[];
 
-  constructor(private readonly datePipe: DatePipe) {
+  tooltipModel: GraphTooltipModel | null = null;
+
+  constructor(
+    @Inject(DOCUMENT) private document: Document,
+    private readonly datePipe: DatePipe,
+    private cd: ChangeDetectorRef,
+  ) {
     this.dataset = this.generateData();
 
     this.dates = this.dataset
@@ -42,7 +51,7 @@ export class AntiDdosInfoComponent implements OnInit {
     this.scaleY = scaleLinear()
       .domain([0, 100000]) // TODO
       .range([this.mc.innerHeight, 0]);
-    
+
     this.drawAreaChart();
     this.drawAxis();
     this.addInteractivity();
@@ -111,17 +120,7 @@ export class AntiDdosInfoComponent implements OnInit {
   private drawAreaChart(): void {
     const g = this.createG();
 
-    const colorDomain = range(this.dataset[0].values.length).map(d => d.toString());
-
-    const scaleFill = scaleOrdinal<string>()
-      .domain(colorDomain)
-      .range(COLORS.map(c => c.fill));
-    
-    const scaleStroke = scaleOrdinal<string>()
-      .domain(colorDomain)
-      .range(COLORS.map(c => c.stroke));
-
-    for (let i = 0; i < colorDomain.length; i++) {
+    for (let i = 0; i < this.dataset[0].values.length; i++) {
       const areaGenerator = area<typeof this.dataset[number]>()
         .y0(this.mc.innerHeight)
         .y1(d => this.scaleY(d.values[i]))
@@ -129,10 +128,10 @@ export class AntiDdosInfoComponent implements OnInit {
 
       g.append('path')
         .attr('d', areaGenerator(this.dataset))
-        .attr('fill', scaleFill(i.toString()));
+        .attr('fill', SCALE_FILL(i));
     }
 
-    for (let i = 0; i < colorDomain.length; i++) {
+    for (let i = 0; i < this.dataset[0].values.length; i++) {
       const lineGenerator = line<typeof this.dataset[number]>()
         .x(d => this.scaleX(d.date))
         .y(d => this.scaleY(d.values[i]));
@@ -140,7 +139,7 @@ export class AntiDdosInfoComponent implements OnInit {
       g.append('path')
         .attr('d', lineGenerator(this.dataset))
         .attr('fill', 'none')
-        .attr('stroke', scaleStroke(i.toString()));
+        .attr('stroke', SCALE_STROKE(i));
     }
 
     g.append('line')
@@ -159,14 +158,7 @@ export class AntiDdosInfoComponent implements OnInit {
       .domain(this.dataset.map(d => d.date))
       .range([0, this.mc.innerWidth]);
 
-    let hoverRuler: Selection<SVGLineElement, unknown, null, undefined> | null = null;
-
-    g.on('mouseenter', () => {
-      hoverRuler = g.append('line')
-        .attr('stroke', '#000')
-        .attr('stroke-dasharray', 6);
-    })
-    .on('mouseleave', () => hoverRuler?.remove());
+    let hintG = this.createG();
 
     g.selectAll('rect.stealth')
       .data(this.dataset)
@@ -179,12 +171,48 @@ export class AntiDdosInfoComponent implements OnInit {
       .attr('height', this.mc.innerHeight)
       .attr('fill', 'transparent')
       .on('mouseenter', (e: MouseEvent, d) => {
-        hoverRuler!
+        hintG.html('');
+
+        hintG.append('line')
+          .attr('stroke', '#000')
+          .attr('stroke-dasharray', 3)
           .attr('x1', this.scaleX(d.date))
           .attr('y1', 0)
           .attr('x2', this.scaleX(d.date))
-          .attr('y2', this.scaleY(this.mc.innerHeight))
+          .attr('y2', this.scaleY(this.mc.innerHeight));
+
+        hintG.selectAll('circle.c-value')
+          .data(d.values)
+          .enter()
+          .append('circle')
+          .attr('class', 'c-value')
+          .attr('cx', this.scaleX(d.date))
+          .attr('cy', (d) => this.scaleY(d))
+          .attr('r', 4)
+          .attr('stroke', '#000')
+          .attr('fill', (_, i) => SCALE_FILL(i));
+
+        const p = pointer(e, this.svgRef.nativeElement);
+
+        console.log(`x: ${p[0]}, y: ${p[1]}`);
+        console.log(`x: ${e.pageX}, y: ${e.pageY}`);
+
+        this.tooltipModel = new GraphTooltipModel(
+          GraphTooltipPosition.Center,
+          p[0],
+          p[1],
+          this.datePipe.transform(d.date, 'HH:mm:ss') ?? '',
+          d.values
+        );
+
+        this.cd.markForCheck();
       });
+
+    g.on('mouseleave', () => {
+      hintG.html('');
+      this.tooltipModel = null;
+      this.cd.markForCheck();
+    });
   }
 
   private createG(): typeof g {

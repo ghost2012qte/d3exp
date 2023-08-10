@@ -4,3 +4,13 @@
   attr.viewBox="0 0 {{mc.width}} {{mc.height}}"
   style="cursor: crosshair;"
 ></svg>
+
+<div class="graph-tooltip" [style.top]="'1px'" [style.left]="'1px'">
+  <ng-container *ngIf="tooltipModel">
+    <div>{{ tooltipModel.title }}</div>
+
+    <div *ngFor="let item of tooltipModel.values">
+      {{ item }}
+    </div>
+  </ng-container>
+</div>
