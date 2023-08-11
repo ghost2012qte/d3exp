@@ -5,12 +5,31 @@
   style="cursor: crosshair;"
 ></svg>
 
-<div class="graph-tooltip" [style.top]="'1px'" [style.left]="'1px'">
-  <ng-container *ngIf="tooltipModel">
-    <div>{{ tooltipModel.title }}</div>
+<div
+  *ngIf="tooltipModel"
+  class="graph-tooltip"
+  [style.top]="tooltipModel.mouseY + 'px'"
+  [style.left]="tooltipModel.mouseX + 'px'"
+>
+  <div><b>{{ tooltipModel.title }}</b></div>
 
-    <div *ngFor="let item of tooltipModel.values">
-      {{ item }}
+  <div class="graph-tooltip__hr"></div>
+
+  <div
+    *ngFor="let item of tooltipModel.values"
+    class="row"
+  >
+    <div
+      class="row__color"
+      [style.background-color]="item.color"
+    ></div>
+
+    <div class="row__name">
+      {{ item.name }}
     </div>
-  </ng-container>
+
+    <div class="row__val">
+      {{ item.val }}
+    </div>
+  </div>
 </div>

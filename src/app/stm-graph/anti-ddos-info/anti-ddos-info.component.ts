@@ -1,8 +1,8 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Inject, OnInit, ViewChild } from '@angular/core';
 import { ANTI_DDOS_MC, SCALE_FILL, SCALE_STROKE } from './anti-ddos-info.config';
 import { ScaleLinear, ScaleTime, Selection, area, line, pointer, scaleBand, scaleLinear, scaleTime, select } from 'd3';
-import { DOCUMENT, DatePipe } from '@angular/common';
-import { GraphTooltipModel, GraphTooltipPosition } from './classes/graph-tooltip-model';
+import {  DatePipe } from '@angular/common';
+import { GraphTooltipModel } from './classes/graph-tooltip-model';
 
 @Component({
   selector: 'app-anti-ddos-info',
@@ -26,7 +26,7 @@ export class AntiDdosInfoComponent implements OnInit {
   tooltipModel: GraphTooltipModel | null = null;
 
   constructor(
-    @Inject(DOCUMENT) private document: Document,
+    private readonly hostRef: ElementRef<HTMLElement>,
     private readonly datePipe: DatePipe,
     private cd: ChangeDetectorRef,
   ) {
@@ -192,17 +192,17 @@ export class AntiDdosInfoComponent implements OnInit {
           .attr('stroke', '#000')
           .attr('fill', (_, i) => SCALE_FILL(i));
 
-        const p = pointer(e, this.svgRef.nativeElement);
-
-        console.log(`x: ${p[0]}, y: ${p[1]}`);
-        console.log(`x: ${e.pageX}, y: ${e.pageY}`);
+        const p = pointer(e, this.hostRef.nativeElement);
 
         this.tooltipModel = new GraphTooltipModel(
-          GraphTooltipPosition.Center,
-          p[0],
+          p[0] + scaleStealth.bandwidth(),
           p[1],
           this.datePipe.transform(d.date, 'HH:mm:ss') ?? '',
-          d.values
+          d.values.map((value, i) => ({
+            val: value,
+            color: SCALE_FILL(i),
+            name: 'value' + i,
+          }))
         );
 
         this.cd.markForCheck();

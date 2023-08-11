@@ -3,6 +3,39 @@
   position: relative;
 }
 
+
+
 .graph-tooltip {
   position: absolute;
+  background: #fff;
+  z-index: 100;
+  padding: 5px;
+  border-radius: 5px;
+  border: 1px solid #000;
+
+  &__hr {
+    height: 1px;
+    background-color: #979797;
+    margin: 3px 0;
+  }
+}
+
+.row {
+  display: flex;
+  align-items: center;
+
+  &__color {
+    height: 4px;
+    width: 16px;
+    border-radius: 3px;
+    margin-right: 6px;
+  }
+
+  &__name {
+    margin-right: 6px;
+  }
+
+  &__val {
+    
+  }
 }
